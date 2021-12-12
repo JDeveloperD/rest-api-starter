@@ -26,6 +26,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "helmet": "^4.6.0",
+    "http-errors": "^1.8.1",
     "https": "^1.0.0",
     "moment": "^2.29.1",
     "mongoose": "^6.0.13",

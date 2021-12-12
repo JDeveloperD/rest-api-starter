@@ -1,5 +1,4 @@
 // @ts-check
-
 /**
  * @fileoverview response.helper.js, agregamos metodos de respuesta personalizadas al parámetro "res" de express
  * @version     1.0
@@ -9,92 +8,93 @@
  * v1.0     -   creación del archivo
  */
 
-const responseCodes = {
-  created: 201,
-  deleted: 200,
-  updated: 200,
-  no_content: 204,
-  invalidRequest: 400,
-  unsupportedResponseType: 400,
-  invalidScope: 400,
-  invalidGrant: 400,
-  invalidCredentials: 400,
-  invalidRefresh: 400,
-  noData: 400,
-  invalidData: 400,
-  accessDenied: 401,
-  unauthorized: 401,
-  invalidClient: 401,
-  forbidden: 403,
-  resourceNotFound: 404,
-  notAcceptable: 406,
-  resourceExists: 409,
-  conflict: 409,
-  resourceGone: 410,
-  payloadTooLarge: 413,
-  unsupportedMediaType: 415,
-  tooManyRequests: 429,
-  serverError: 500,
-  unsupportedGrantType: 501,
-  notImplemented: 501,
-  temporarilyUnavailable: 503
+import { Response, Request, NextFunction } from 'express'
+
+const responseCode = {
+  SUCCESS: 200,
+  CREATED: 201,
+  DELETED: 200,
+  UPDATED: 200,
+  NO_CONTENT: 204,
+  INVALID_REQUEST: 400,
+  UNSUPPORTED_RESPONSE_TYPE: 400,
+  INVALID_SCOPE: 400,
+  INVALID_GRANT: 400,
+  INVALID_CREDENTIALS: 400,
+  INVALID_REFRESH: 400,
+  NO_DATA: 400,
+  INVALID_DATA: 400,
+  ACCESS_DENIED: 401,
+  UNAUTHORIZED: 401,
+  INVALID_CLIENTE: 401,
+  FORBIDDEN: 403,
+  RESOURCE_NOT_FOUND: 404,
+  NOT_ACCEPTABLE: 406,
+  RESOURCE_EXISTS: 409,
+  CONFLICT: 409,
+  RESOURCE_GONE: 410,
+  PAYLOAD_TOO_LARGE: 413,
+  UNSUPPORTED_MEDIA_TYPE: 415,
+  TOO_MANY_REQUESTS: 429,
+  SERVER_ERROR: 500,
+  UNSUPPORTED_GRANT_TYPE: 501,
+  NOT_IMPLEMENTED: 501,
+  TEMPORARILY_UNAVAILABLE: 503
 }
 
 const responseHelper = (req, res, next = null) => {
   res.respond = ({ data = null, status = 200, message = '' }) => {
-    res.statusCode = status
+    const body = { code: status }
 
-    if (data === null) {
-      return res.json(message)
-    } else {
-      return res.json({ code: status, data })
-    }
+    if (message) body.message = message
+    if (data) body.data = data
+
+    return res.status(status).json(body)
   }
 
-  res.fail = ({ description, status = 400, errors = null }) => {
-    const message = {
-      status,
-      description,
-      errors
-    }
+  res.fail = ({ description = 'Error', status = 400, errors = null }) => {
+    const bodyError = { code: status }
 
-    res.respond({ message })
+    if (description) bodyError.description = description
+    if (errors) bodyError.errors = errors
+
+    return res.status(status).json(bodyError)
   }
 
   res.respondCreated = ({ data = null, message = '' }) => {
-    res.respond({ data, status: responseCodes.created, message })
+    res.respond({ data, status: responseCode.CREATED, message })
   }
 
   res.respondDeleted = ({ data = null, message = '' }) => {
-    res.respond({ data, status: responseCodes.deleted, message })
+    res.respond({ data, status: responseCode.DELETED, message })
   }
 
   res.respondUpdated = ({ data = null, message = '' }) => {
-    res.respond({ data, status: responseCodes.updated, message })
+    res.respond({ data, status: responseCode.UPDATED, message })
   }
 
   res.respondNoContent = () => {
-    res.respond({ data: null, status: responseCodes.no_content })
+    res.respond({ data: null, status: responseCode.NO_CONTENT })
   }
 
-  res.failUnauthorized = ({ description = 'Unauthorized', code = null }) => {
-    res.fail({ description, status: responseCodes.unauthorized, code })
+  res.failUnauthorized = ({ description = 'Unauthorized' }) => {
+    res.fail({ description, status: responseCode.UNAUTHORIZED })
   }
 
-  res.failForbidden = ({ description = 'Forbidden', code = null }) => {
-    res.fail({ description, status: responseCodes.forbidden, code })
+  res.failForbidden = ({ description = 'Forbidden' }) => {
+    res.fail({ description, status: responseCode.FORBIDDEN })
   }
 
-  res.failNotFound = ({ description = 'Not Found', code = null }) => {
-    res.fail({ description, status: responseCodes.resourceNotFound, code })
+  res.failNotFound = ({ description = 'Not Found' }) => {
+    res.fail({ description, status: responseCode.RESOURCE_NOT_FOUND })
   }
 
   res.failValidationError = ({ description = 'Bad Request', errors = [] }) => {
-    res.fail({ description, status: responseCodes.invalidData, errors })
+    res.fail({ description, status: responseCode.INVALID_DATA, errors })
   }
 
-  res.failServerError = ({ description = 'Internal Server Error', code = null }) => {
-    res.fail({ description, status: responseCodes.serverError, code })
+  res.failServerError = ({ description = 'Internal Server Error' }) => {
+    res.fail({ description, status: responseCode.SERVER_ERROR })
   }
 
   if (next !== null) { next() }
@@ -102,5 +102,5 @@ const responseHelper = (req, res, next = null) => {
 
 export {
   responseHelper,
-  responseCodes
+  responseCode
 }
