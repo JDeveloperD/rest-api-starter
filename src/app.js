@@ -14,6 +14,7 @@ import helmet from 'helmet'
 import router from 'interface'
 import { responseHelper } from './utils/response.helper'
 import config from 'config'
+import { error404, generalErrorHandler } from './middleware'
 
 const app = express()
 const logger = config.get('LOGGER')
@@ -31,5 +32,9 @@ app
   .use(responseHelper)
 
 router(app)
+
+app
+  .use(error404)
+  .use(generalErrorHandler)
 
 export default app
